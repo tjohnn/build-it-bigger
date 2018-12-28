@@ -3,6 +3,7 @@ package com.udacity.gradle.builditbigger;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -54,13 +55,18 @@ public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
         try {
             return myApiService.tellAJoke().execute().getData();
         } catch (IOException e) {
-            return e.getMessage();
+            return null;
         }
     }
 
     @Override
     protected void onPostExecute(String result) {
         onEndpointAsyncTaskListener.onDone();
+        if(result == null){
+            Toast.makeText(context, R.string.error_fetching_joke, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Intent intent = new Intent(context, JokeDetails.class);
         intent.putExtra(JokeDetails.JOKE_EXTRA_KEY, result);
         context.startActivity(intent);
